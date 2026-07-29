@@ -1,0 +1,98 @@
+openapi: "3.0.0"
+info:
+  title: Wikimedia Magic Eight Ball API
+  description: |
+    The Magic Eight Ball supplies random useless answers to a select number of questions. You may select the question to be answered from a preset list. All endpoints begin with the /service/8ball/v0/ prefix and use the REST protocol with JSON response bodies. For more information:
+    - [Source code](https://github.com/apergos/magic-8-ball)
+  version: v0 (alpha)
+  contact:
+    name: Ariel Glenn, the poor sap
+    url: https://www.mediawiki.org/wiki/User:ArielGlenn
+  termsOfService:  https://github.com/apergos/magic-8-ball/terms_of_use.html
+  license:
+    name: Creative Commons Attribution-Share Alike 4.0
+    url:  https://creativecommons.org/licenses/by-sa/4.0/deed.test
+servers:
+  url: http://127.0.0.1:8080
+externalDocs:
+  description: "Magic Eight Ball API documentation"  
+  url: https://www.mediawiki.org/wiki/API:REST_API/Extensions/Rest_Sandbox/Documentation_display
+tags:
+  - name: Revision quality
+  - name: Topics and descriptions
+  - name: Countries, language, and translation
+  - name: Revscoring (formerly ORES)
+paths:
+  /8ball/v0/topics:
+   get:
+     parameters: []
+     responses:
+       200:
+         description: OK
+       content:
+         application/json:
+             schema:
+               type: string
+               description: topics url description of response here
+               required: []
+     description: Each question the Eight Ball knows how to answer corresponds to a one word topic. The list of topics and questions is fixed. This operation returns the list of known topics and their corresponding questions.
+     summary: get a list of supported questions
+     operationId: getTopics
+  /8ball/v0/question/{topic}:
+   get:
+     parameters:
+       name: topic
+       description: Short form of the question, abbreviated as a one word topic, to which an answer will be given. Known topics are X, Y, Z.
+       in: path
+       schema:
+         description: Short topic thingie blah blah A
+         type: string
+       required: true
+     responses:
+       200:
+         description: OK
+       content:
+         application/json:
+           schema:
+             type: string
+             description: short topic thingie reponse description
+             required:
+               - question
+               - answer
+             properties:
+               question:
+                 description: the full text of the question being asked, derived from the short form (topic)
+                 type: string
+               answer:
+                 description: the answer to the question
+                 type: string
+     description: Each question the Eight Ball knows how to answer corresponds to a one word topic. When the topic is supplied, an answer will be chosen at random from a set of fixed possibilities. The list is the same set of answers as the original Magic 8 Ball.
+     summary: get an answer from the 8 ball.
+     operationId: getAnswer
+  /8ball/v0/help:
+   get:
+     parameters: []
+     responses:
+       200:
+         description: OK
+       content:
+         application/json:
+           schema:
+             description: help thinige response description
+             required:
+               - help
+               - topics
+               - question
+             properties:
+               help:
+                 description: example of how to get the help message via curl
+                 type: string
+               topics:
+                 description: example of how to get the topics list via curl
+                 type: string
+               question:
+                 description: example of how to ask a supported question via curl
+                 type: string
+     description: Get help on how to use the 8 ball. Example urls with curl are provided, you will need to adjust the host and port for your installation.
+     summary: Get help on how to use the 8 ball.
+     operationId: getHelp
