@@ -11,7 +11,7 @@ file in this repository for more.
 Start it by running, in a terminal window:
   python3 eightball.py
 You will then be able to make queries to 127.0.1:8080 via a browser or curl.
-Go to the url http://127.0.0.1:8080/8ball/v0/help for available queries.
+Go to the url http://127.0.0.1:8080/8ball/v1/help for available queries.
 
 If you want to run a second copy of it on another port, or a different host, you
 may do so by running

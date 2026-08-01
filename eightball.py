@@ -21,7 +21,7 @@ class EightBallRequestHandler(BaseHTTPRequestHandler):
     '''
     process an incoming HTTP request for a query to the magic 8 ball.
     '''
-    API_BASE = '/8ball/v0/'
+    API_BASE = '/8ball/v1/'
     TOPICS = {'romance': 'Will I have a great date within the next 2 weeks?',
               'puppy': 'Will a wonderful puppy enter my life within the next 4 weeks?',
               'kitty': 'Will a wonderful kitty enter my life within the next 4 weeks?',
@@ -36,9 +36,9 @@ class EightBallRequestHandler(BaseHTTPRequestHandler):
                'Cannot predict now', 'Concentrate and ask again', "Don't count on it",
                'My reply is no', 'My sources say no', 'Outlook not so good',
                'Very doubtful']
-    HELP = {'help': 'example: curl "http://127.0.0.1:8080/8ball/v0/help"',
-            'topics': 'example: curl "http://127.0.0.1:8080/8ball/v0/topics',
-            'question': 'example: curl "http://127.0.0.1:8080/8ball/v0/question/puppy'}
+    HELP = {'help': 'example: curl "http://127.0.0.1:8080/8ball/v1/help"',
+            'topics': 'example: curl "http://127.0.0.1:8080/8ball/v1/topics',
+            'question': 'example: curl "http://127.0.0.1:8080/8ball/v1/question/puppy'}
 
     def get_ball_answer(self):
         '''
