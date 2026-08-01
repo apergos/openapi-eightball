@@ -22,7 +22,8 @@ you may do so by running
   python3 eightball.py --host server-name-here --port port-number-here
      --cert /full/path/to/cert/file --key /full/path/to/key/file
      
-The toy service has an accompanying OpenAPI spec file.
+The toy service has an accompanying OpenAPI spec file. You will need to edit
+it so that the servers: entry has the right urls for your service.
 
 The terms of use and spec files are intended to be hosted on a web server
 on your desktop or laptop locally.
