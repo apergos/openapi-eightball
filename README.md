@@ -17,6 +17,11 @@ If you want to run a second copy of it on another port, or a different host, you
 may do so by running
   python3 eightball.py --host server-name-here --port port-number-here
 
+If you would like to run the service over https instead of the default http,
+you may do so by running
+  python3 eightball.py --host server-name-here --port port-number-here
+     --cert /full/path/to/cert/file --key /full/path/to/key/file
+     
 The toy service has an accompanying OpenAPI spec file.
 
 The terms of use and spec files are intended to be hosted on a web server
