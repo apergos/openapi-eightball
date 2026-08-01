@@ -11,6 +11,8 @@ is Very Bad. Do Not Do That.
 import argparse
 import json
 import random
+import sys
+from ssl import PROTOCOL_TLS_SERVER, SSLContext
 from urllib import parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -109,6 +111,13 @@ class EightBallRequestHandler(BaseHTTPRequestHandler):
         self.send_error(405, message="POST method unsupported", explain="")
 
 
+def whine(message):
+    '''
+    minimal error message handler
+    '''
+    sys.stderr.write(message + "\n")
+    sys.exit(1)
+
 def do_main():
     '''
     entry point
@@ -116,9 +125,20 @@ def do_main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", type=str, default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8080)
+    parser.add_argument("--cert", type=str, default="")
+    parser.add_argument("--keyfile", type=str, default="")
     args = parser.parse_args()
 
+    if (args.cert and not args.keyfile) or (args.keyfile and not args.cert):
+        whine("both --cert and --keyfile must be provided or omitted together")
+
+    if args.cert:
+        ssl_context = SSLContext(PROTOCOL_TLS_SERVER)
+        ssl_context.load_cert_chain(args.cert, args.keyfile)
+        ssl_context.load_default_certs()
     server = HTTPServer((args.host, args.port), EightBallRequestHandler)
+    if args.cert:
+        server.socket = ssl_context.wrap_socket(server.socket, server_side=True)
     server.serve_forever()
 
 
