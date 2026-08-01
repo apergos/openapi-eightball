@@ -36,9 +36,9 @@ class EightBallRequestHandler(BaseHTTPRequestHandler):
                'Cannot predict now', 'Concentrate and ask again', "Don't count on it",
                'My reply is no', 'My sources say no', 'Outlook not so good',
                'Very doubtful']
-    HELP = {'help': 'example: curl "http://127.0.0.1:8080/8ball/v1/help"',
-            'topics': 'example: curl "http://127.0.0.1:8080/8ball/v1/topics',
-            'question': 'example: curl "http://127.0.0.1:8080/8ball/v1/question/puppy'}
+    HELP = {'help': 'example: curl "http[s]://host:port/8ball/v1/help"',
+            'topics': 'example: curl "http[s]://host:port/8ball/v1/topics',
+            'question': 'example: curl "http[s]://host:port/8ball/v1/question/puppy'}
 
     def get_ball_answer(self):
         '''
