@@ -11,11 +11,11 @@ is Very Bad. Do Not Do That.
 import argparse
 import json
 import random
+import os
 import sys
 from ssl import PROTOCOL_TLS_SERVER, SSLContext
 from urllib import parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
-
 
 class EightBallRequestHandler(BaseHTTPRequestHandler):
     '''
@@ -39,6 +39,12 @@ class EightBallRequestHandler(BaseHTTPRequestHandler):
     HELP = {'help': 'example: curl "http[s]://host:port/8ball/v1/help"',
             'topics': 'example: curl "http[s]://host:port/8ball/v1/topics',
             'question': 'example: curl "http[s]://host:port/8ball/v1/question/puppy'}
+
+    HTML = 'text/html; charset=UTF-8'
+    JSON = 'application/json; charset=UTF-8'
+    TEXT = 'text/plain; charset=UTF-8'
+
+    KNOWN_FILES = [ 'openapi-spec.yaml', 'terms_of_use.html']
 
     def get_ball_answer(self):
         '''
@@ -70,6 +76,47 @@ class EightBallRequestHandler(BaseHTTPRequestHandler):
         '''
         return topic not in self.TOPICS and topic != 'topics' and topic != 'help'
 
+    def handle_api_endpoints(self, endpoint, value):
+        '''
+        get the response for a specific known  endpoint
+        '''
+        if endpoint == 'topics':
+            return json.dumps(self.TOPICS)
+        if endpoint == 'help':
+            return json.dumps(self.HELP)
+        if endpoint == 'question':
+            return self.get_answer(value)
+        return ''
+
+    def handle_file_endpoints(self, endpoint):
+        '''
+        given a known filename,
+        open it relative to current working dir, read the contents and return them,
+        or None on error
+
+        if the filename is not in the known list, return the empty string.
+        suboptimal but this is a toy so who cares
+        '''
+        if endpoint in self.KNOWN_FILES:
+            try:
+                with open(os.path.join(os.getcwd(), endpoint), encoding="utf-8") as webfile:
+                    contents = webfile.read()
+            except Exception:  # pylint: disable=broad-except
+                return None
+            return contents
+        return ''
+
+    def get_mimetype(self, endpoint):
+        '''
+        return mimetype from the file extension.
+        :eyeroll:
+        '''
+        if endpoint.endswith(".html"):
+            return self.HTML
+        if endpoint.endswith(".yaml"):
+            return self.TEXT
+        return self.JSON
+
     def get_response(self):
         '''
         get the body of the response for q request for the list of questions
@@ -79,29 +126,45 @@ class EightBallRequestHandler(BaseHTTPRequestHandler):
         # url_fields[2] is the path up to the ? if any
         path_components = url_fields[2].split('/')
         if self.path_invalid(path_components, query=url_fields[3]):
-            self.send_error(404, message='Not Found',
-                            explain='No such content available: ' + path_components[2])
-            return ''
-        if path_components[2] == 'topics':
-            return json.dumps(self.TOPICS)
-        if path_components[2] == 'help':
-            return json.dumps(self.HELP)
-        if path_components[2] == 'question':
-            return self.get_answer(path_components[3])
-        self.send_error(404, message='Not Found',
-                        explain='No such content available: ' + path_components[2])
-        return ''
+            return 404, self.HTML, 'No such content available: ' + url_fields[2]
+
+        endpoint = path_components[2]
+        if len(path_components) == 4:
+            extra = path_components[3]
+        else:
+            extra = None
+
+        content = self.handle_api_endpoints(endpoint, extra)
+        if content:
+            return 200, self.JSON, content
+
+        content = self.handle_file_endpoints(endpoint)
+        if content:
+            return 200, self.get_mimetype(endpoint), content
+        if content is None:
+            return 403, self.HTML, 'Check file permissions for ' + path_components[2]
+
+        return 404, self.HTML, 'No such content available: ' + path_components[2]
+
 
 
     def do_GET(self):   # pylint: disable=invalid-name
         '''
         override the GET method handler for the parent class
         '''
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.end_headers()
-        self.wfile.write(self.get_response().encode("utf-8"))
+        responsecode, mimetype, content = self.get_response()
+
+        if responsecode == 404:
+            self.send_error(404, message='Not Found', explain=content)
+        else:
+            self.send_response(200, "OK")
+            self.send_header("Content-Type", mimetype)
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Server", "ATG Eightball Toy/1.0.0")
+            encoded = content.encode("utf-8")
+            self.send_header("Content-Length", len(encoded))
+            self.end_headers()
+            self.wfile.write(encoded)
 
     def do_POST(self):  # pylint: disable=invalid-name
         '''

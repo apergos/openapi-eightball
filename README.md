@@ -23,12 +23,12 @@ you may do so by running
      --cert /full/path/to/cert/file --key /full/path/to/key/file
      
 The toy service has an accompanying OpenAPI spec file. You will need to edit
-it so that the servers: entry has the right urls for your service.
-
-The terms of use and spec files are intended to be hosted on a web server
-on your desktop or laptop locally.
+it so that the servers: entry has the right urls for your service. This file
+will be automatically served at http://127.0.0.1:8080/8ball/v1/openapi-spec.yaml
+as well the terms of use file, via http://127.0.0.1:8080/8ball/v1/terms_of_use.html
 
 This service is an example for use wth the MediaWiki Rest Sandbox,
 see https://www.mediawiki.org/wiki/Help:RestSandbox for the Sandbox,
-and TBD for using this demo service and the included OpenAPI spec with
+and https://www.mediawiki.org/wiki/Documentation/API_documentation/Registering_external_modules
+for using this demo service and the included OpenAPI spec with
 the Sandbox on a local installation of MediaWiki.
