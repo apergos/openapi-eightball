@@ -26,6 +26,7 @@ The toy service has an accompanying OpenAPI spec file. You will need to edit
 it so that the servers: entry has the right urls for your service. This file
 will be automatically served at http://127.0.0.1:8080/8ball/v1/openapi-spec.yaml
 as well the terms of use file, via http://127.0.0.1:8080/8ball/v1/terms_of_use.html
+or whatever hostname and port you specify as arguments when starting the service
 
 This service is an example for use wth the MediaWiki Rest Sandbox,
 see https://www.mediawiki.org/wiki/Help:RestSandbox for the Sandbox,
